@@ -24,7 +24,7 @@ public class Film {
 		}
 		
 		this.filmID = filmID;
-		numberOfRentals = 0;
+		this.numberOfRentals = 0;
 	}
 	
 	public int getFilmID() {
@@ -36,11 +36,11 @@ public class Film {
 	}
 	
 	public int getNumberOfRentals() {
-		return numberOfRentals;
+		return this.numberOfRentals;
 	}
 	
 	public void addRental() {
-		numberOfRentals++;
+		this.numberOfRentals++;
 	}
 	
 	public void setTitle(String title) {

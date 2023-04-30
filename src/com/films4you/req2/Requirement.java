@@ -2,14 +2,10 @@ package com.films4you.req2;
 
 import com.films4you.main.Database;
 import com.films4you.main.RequirementInterface;
-import com.films4you.main.TaskNotAttemptedException;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -26,6 +22,7 @@ public class Requirement implements RequirementInterface {
 	    Database db = new Database();
 	    List<Film> allFilms = new ArrayList<>();
 	    List<Payment> allPayments = new ArrayList<>();
+	    List<Film> orderedFilms = new ArrayList<>();
 	    Film[] top10Films = new Film[10];
 	    
 	 /*
@@ -108,10 +105,10 @@ public class Requirement implements RequirementInterface {
 	    
 	    // Cycles through both lists and updates the amount of times each film has
 	    // been rented out
-	    for (Payment payments : allPayments) {
-	    	for (Film films : allFilms) {
-	    		if (payments.getFilmID() == films.getFilmID()) {
-	    			films.addRental();
+	    for (int j = 0; j < allPayments.size() - 1; j++) {
+	    	for (int i = 0; i < allFilms.size() - 1; i++) {
+	    		if (allFilms.get(i).getFilmID() == allPayments.get(j).getFilmID()) {
+	    			allFilms.get(i).addRental();
 	    		}
 	    	}
 	    }
@@ -121,15 +118,18 @@ public class Requirement implements RequirementInterface {
 	     * and adding it to a list of 10 and then removing it from the list of films 
 	     * before looping through again
 	     */
+	    Film tempMax;
+	    int place = 0;
 	    for (int i = 0; i < 10; i++) {
-	    	for (int j = 0; j < allFilms.size() - 1; j++) {
-	    		Film tempMax = allFilms.get(j);
-	    		if (tempMax.getNumberOfRentals() < allFilms.get(j + 1).getNumberOfRentals()) {
-	    			tempMax = allFilms.get(j + 1);
+	    	for (int j = 0; j < allFilms.size() - i - 1; j++) {
+	    		if (allFilms.get(j).getNumberOfRentals() < allFilms.get(j + 1).getNumberOfRentals()) {
+	    			tempMax = allFilms.get(j);
+	    			allFilms.set(j, allFilms.get(j + 1));
+	    			allFilms.set(j + 1, tempMax);
 	    		}
-	    		top10Films[i] = tempMax;
-	    		allFilms.remove(tempMax);
 	    	}
+	    	top10Films[place] = allFilms.get(i);
+	    	place++;
 	    }
 	    return top10Films;
 	    
@@ -144,7 +144,20 @@ public class Requirement implements RequirementInterface {
 	 */
   @Override
   public @Nullable String getValueAsString() {
-    throw new TaskNotAttemptedException();
+	  String output = "";
+	  Film[] top10Films;
+	try {
+		top10Films = getFilms();
+		for (Film film : top10Films) {
+			output += film.getTitle() + " (" + film.getFilmID()
+					+ "): " + film.getNumberOfRentals() + "\n";
+		}
+		return output;
+	}
+	 catch (SQLException e) {
+		e.printStackTrace();
+		return null;
+	}
   }
 
   /**
@@ -153,11 +166,25 @@ public class Requirement implements RequirementInterface {
     
    * @return A String formatted for the end user containing the
    * top 10 rented films and their IDs. In the format 
-   * "1. [FILM]([FILMID]) has been rented [COUNT] times".
+   * "1. [FILM]([FILMID]) has been rented [COUNT] times
+   * 2. [FILM]([FILMID]) has been rented [COUNT] times
+   * 3. etc.".
    */
   @Override
   public @NonNull String getHumanReadable() {
-    throw new TaskNotAttemptedException();
+	  String output = "";
+	  Film[] top10Films;
+	  try {
+		top10Films = getFilms();
+		for (int i = 0; i < 10; i++) {
+			output += (i+1) + ". " + top10Films[i].toString() + "\n";
+		}
+		return output;
+	} 
+	  catch (SQLException e) {
+		e.printStackTrace();
+		return null;
+	}
   }
 
 }
