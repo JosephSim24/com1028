@@ -8,7 +8,6 @@ public class Film {
 	
 	private int filmID;
 	private String title;
-	private int numberOfRentals;
 	
 	/**
 	 * Create a film with a given ID and title
@@ -24,7 +23,6 @@ public class Film {
 		}
 		
 		this.filmID = filmID;
-		this.numberOfRentals = 0;
 	}
 	
 	public int getFilmID() {
@@ -34,24 +32,14 @@ public class Film {
 	public String getTitle() {
 		return this.title;
 	}
-	
-	public int getNumberOfRentals() {
-		return this.numberOfRentals;
-	}
-	
-	public void addRental() {
-		this.numberOfRentals++;
-	}
-	
+		
 	public void setTitle(String title) {
 		this.title = title;
 	}
 	
-	
 	@Override
 	public String toString() {
-		return title + " (" + filmID + ") has been rented out " 
-				+ numberOfRentals + " times";
+		return title + " (ID: " + filmID + ")";
 	}
 
 }

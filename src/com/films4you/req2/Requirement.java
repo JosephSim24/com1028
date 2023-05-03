@@ -2,10 +2,17 @@ package com.films4you.req2;
 
 import com.films4you.main.Database;
 import com.films4you.main.RequirementInterface;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -18,74 +25,62 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public class Requirement implements RequirementInterface {	
 	
+	private Map<Film, Integer> rentCountFilms;
+	
+	/**
+	 * A method which returns the top 10 films based on the number of rentals
+	 * 
+	 * @return An array list consisting of the top 10 films based on number
+	 * of rentals of each film
+	 */
+	
 	public Film[] getFilms() throws SQLException, IllegalStateException {
 	    Database db = new Database();
+	    List<Rental> allRentals = new ArrayList<>();
+	    List<Inventory> allInventory = new ArrayList<>();
 	    List<Film> allFilms = new ArrayList<>();
-	    List<Payment> allPayments = new ArrayList<>();
-	    List<Film> orderedFilms = new ArrayList<>();
-	    Film[] top10Films = new Film[10];
-	    
-	 /*
-	  *  Retrieve all the payments and puts them in a list, setting
-	  *  the respective rentalID before putting it in the list
-	  */
-	    
-	    ResultSet rs = db.query("SELECT * FROM payment");
-	    if (rs == null) {
-	    	throw new IllegalStateException("Query returned null");
-	    }
-	    
-	    while (rs.next()) {
-	    	int paymentID = rs.getInt(1);
-	    	int rentalID = rs.getInt(4);
-	    	if (paymentID >= 0 && rentalID >= 0) {
-	    		Payment payment = new Payment(paymentID);
-	    		payment.setRentalID(rentalID);
-	    		allPayments.add(payment);
-	    	}
-	    }
+	    rentCountFilms = new HashMap<Film, Integer>();
+	    Film[] orderedFilms;
 	    
 	 /*
 	  * Retrieve all the inventoryIDs and matches them with the
 	  * with the payments using the rentalIDs as the constant
 	  */
-	    rs = db.query("SELECT * FROM rental");
+	    ResultSet rs = db.query("SELECT * FROM rental");
 	    if (rs == null) {
 	    	throw new IllegalStateException("Query returned null");
 	    }
 	    
 	    while (rs.next()) {
 	    	int rentalID = rs.getInt(1);
-	    	int inventoryID = rs.getInt(2);
+	    	int inventoryID = rs.getInt(3);
 	    	if (inventoryID >= 0 && rentalID >= 0) {
-	    		for (Payment payment : allPayments) {
-	    			if (payment.getRentalID() == rentalID) {
-	    				payment.setInventoryID(inventoryID);
-	    			}
-	    		}
+	    		Rental rental = new Rental(rentalID);
+	    		rental.setInventoryID(inventoryID);
+	    		allRentals.add(rental);
 	    	}
 	    }
+	    
 	    
 	    /*
 		  * Retrieve all the filmIDs and matches them with the
 		  * with the payments using the inventoryIDs as the constant
 		  */
-		    rs = db.query("SELECT * FROM inventory");
-		    if (rs == null) {
-		    	throw new IllegalStateException("Query returned null");
-		    }
+		 rs = db.query("SELECT * FROM inventory");
+		 if (rs == null) {
+		 	throw new IllegalStateException("Query returned null");
+		 }
 		    
-		    while (rs.next()) {
-		    	int inventoryID = rs.getInt(1);
-		    	int filmID = rs.getInt(2);
-		    	if (inventoryID >= 0 && filmID >= 0) {
-		    		for (Payment payment : allPayments) {
-		    			if (payment.getInventoryID() == inventoryID) {
-		    				payment.setFilmID(filmID);
-		    			}
-		    		}
-		    	}
-		    }
+		 while (rs.next()) {
+			 int inventoryID = rs.getInt(1);
+			 int filmID = rs.getInt(2);
+			 if (inventoryID >= 0 && filmID >= 0) {
+				 Inventory item = new Inventory(inventoryID);
+				 item.setFilmID(filmID);
+				 allInventory.add(item);
+			 }
+		 }
+		    
 	    
 	    // Retrieve all the films and puts them in a list
 	    rs = db.query("SELECT * FROM film");
@@ -103,44 +98,79 @@ public class Requirement implements RequirementInterface {
 	    	}
 	    }
 	    
-	    // Cycles through both lists and updates the amount of times each film has
-	    // been rented out
-	    for (int j = 0; j < allPayments.size() - 1; j++) {
-	    	for (int i = 0; i < allFilms.size() - 1; i++) {
-	    		if (allFilms.get(i).getFilmID() == allPayments.get(j).getFilmID()) {
-	    			allFilms.get(i).addRental();
+	    /*
+	     * Cycles through all rentals and all items in the inventory and when there is a similarity,
+	     * finds which film the inventory item is referring to and adds 1 to the rental count for that film
+	     */
+	    for (int rental = 0; rental < allRentals.size() - 1; rental++) {
+	    	for (int item = 0; item < allInventory.size() - 1; item++) {
+	    		if (allRentals.get(rental).getInventoryID() == allInventory.get(item).getInventoryID()) {
+	    			for (int film = 0; film < allFilms.size() - 1; film++) {
+	    				if (allFilms.get(film).getFilmID() == allInventory.get(item).getFilmID()) {
+	    					if (!rentCountFilms.containsKey(allFilms.get(film))) {
+	    						rentCountFilms.put(allFilms.get(film), 1);
+	    					}	else {
+	    						int temp = rentCountFilms.get(allFilms.get(film)) + 1;
+	    	    				rentCountFilms.remove(allFilms.get(film));
+	    	    				rentCountFilms.put(allFilms.get(film), temp);
+	    					}
+	    				}
+	    			}
 	    		}
 	    	}
+	   	}
+	    
+	    /*
+	     * Sorting the hashmap in descending order and storing 
+	     * it in a hashmap called "sortedMap"
+	     */
+	    LinkedHashMap<Film, Integer> sortedMap = new LinkedHashMap<>();
+		List<Integer> values = new ArrayList<>();
+		for (Map.Entry<Film, Integer> entry : rentCountFilms.entrySet()) {
+			values.add(entry.getValue());
+		}
+		Collections.sort(values, Collections.reverseOrder());
+		for (int num : values) {
+			for (Entry<Film, Integer> entry : rentCountFilms.entrySet()) {
+				if (entry.getValue().equals(num)) {
+					sortedMap.put(entry.getKey(), num);
+				}
+			}
+		}
+	    
+		/*
+		 * Creates an array of all films that have been rented in descending
+		 * order based on number of rentals of that film
+		 */
+	    orderedFilms = new Film[sortedMap.size()];
+	    int count = 0;
+	    for (Film film : sortedMap.keySet()) {
+	    	orderedFilms[count] = film;
+	    	count++;
 	    }
 	    
 	    /*
-	     * Loops 10 times, each time finding the highest rented film in the list of films
-	     * and adding it to a list of 10 and then removing it from the list of films 
-	     * before looping through again
+	     * Creates an array of only the first 10 films from the array "orderedFilms"
 	     */
-	    Film tempMax;
-	    int place = 0;
+	    Film[] top10Films = new Film[10];
 	    for (int i = 0; i < 10; i++) {
-	    	for (int j = 0; j < allFilms.size() - i - 1; j++) {
-	    		if (allFilms.get(j).getNumberOfRentals() < allFilms.get(j + 1).getNumberOfRentals()) {
-	    			tempMax = allFilms.get(j);
-	    			allFilms.set(j, allFilms.get(j + 1));
-	    			allFilms.set(j + 1, tempMax);
-	    		}
-	    	}
-	    	top10Films[place] = allFilms.get(i);
-	    	place++;
+	    	top10Films[i] = orderedFilms[i];
 	    }
-	    return top10Films;
 	    
+	    for (int i = 0; i < 10; i++) {
+	    	
+	    }
+	    
+		return top10Films;
 	}
+	
 	
 	/**
 	 * A method which returns the top 10 rented films
 	 
 	 * @return A String containing the 10 top rented films each
-	 * separated by commas in the format "[FILM]([FILMID]):[COUNT],  
-	 * [FILM]([FILMID]):[COUNT], etc.".
+	 * separated by commas in the format "[FILMTITLE]([FILMID]):[RENTCOUNT],  
+	 * [FILMTITLE]([FILMID]):[RENTCOUNT], etc.".
 	 */
   @Override
   public @Nullable String getValueAsString() {
@@ -149,8 +179,8 @@ public class Requirement implements RequirementInterface {
 	try {
 		top10Films = getFilms();
 		for (Film film : top10Films) {
-			output += film.getTitle() + " (" + film.getFilmID()
-					+ "): " + film.getNumberOfRentals() + "\n";
+			output += film.toString() + ": " 
+		+ rentCountFilms.get(film) + "\n";
 		}
 		return output;
 	}
@@ -174,10 +204,13 @@ public class Requirement implements RequirementInterface {
   public @NonNull String getHumanReadable() {
 	  String output = "";
 	  Film[] top10Films;
+	  int count = 1;
 	  try {
 		top10Films = getFilms();
-		for (int i = 0; i < 10; i++) {
-			output += (i+1) + ". " + top10Films[i].toString() + "\n";
+		for (Film film : top10Films) {
+			output += (count) + ". " + film.toString() + " has been rented out "
+					+ rentCountFilms.get(film) + " times\n";
+			count++;
 		}
 		return output;
 	} 
