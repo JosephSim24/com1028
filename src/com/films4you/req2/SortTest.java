@@ -1,5 +1,10 @@
 package com.films4you.req2;
 
+/*
+ * A class to test the sorting of a hashmap.
+ * Not needed for the other classes to work.
+ */
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
