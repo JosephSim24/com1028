@@ -34,7 +34,7 @@ public class Requirement implements RequirementInterface {
 	 * of rentals of each film
 	 */
 	
-	public Film[] getFilms() throws SQLException, IllegalStateException {
+	private Film[] getTop10Films() throws SQLException, IllegalStateException {
 	    Database db = new Database();
 	    List<Rental> allRentals = new ArrayList<>();
 	    List<Inventory> allInventory = new ArrayList<>();
@@ -97,6 +97,7 @@ public class Requirement implements RequirementInterface {
 	    		allFilms.add(film);
 	    	}
 	    }
+	    db.close();
 	    
 	    /*
 	     * Cycles through all rentals and all items in the inventory and when there is a similarity,
@@ -185,18 +186,17 @@ public class Requirement implements RequirementInterface {
 	 * A method which returns the top 10 rented films
 	 
 	 * @return A String containing the 10 top rented films each
-	 * separated by commas in the format "[FILMTITLE]([FILMID]):[RENTCOUNT],  
-	 * [FILMTITLE]([FILMID]):[RENTCOUNT], etc.".
+	 * separated by commas in the format "[FILMTITLE]:[FILMID]:[RENTCOUNT]:\n
+	 * [FILMTITLE]:[FILMID]:[RENTCOUNT]:\n etc.".
 	 */
   @Override
   public @Nullable String getValueAsString() {
 	  String output = "";
 	  Film[] top10Films;
 	try {
-		top10Films = getFilms();
-		for (Film film : top10Films) {
-			output += film.toString() + ": " 
-		+ rentCountFilms.get(film) + "\n";
+		top10Films = getTop10Films();
+		for (int i = 0; i < top10Films.length; i++) {
+			output += i+1 + ":" + top10Films[i].toString() + ":" + rentCountFilms.get(top10Films[i]) + ":\n";
 		}
 		return output;
 	}
@@ -212,28 +212,24 @@ public class Requirement implements RequirementInterface {
     
    * @return A String formatted for the end user containing the
    * top 10 rented films and their IDs. In the format 
-   * "1. [FILM]([FILMID]) has been rented [COUNT] times
-   * 2. [FILM]([FILMID]) has been rented [COUNT] times
+   * "The top 10 films based on their number of rentals is:
+   * 1. [FILM] (ID: [FILMID]) has been rented [COUNT] times
+   * 2. [FILM] (ID: [FILMID]) has been rented [COUNT] times
    * 3. etc.".
    */
   @Override
   public @NonNull String getHumanReadable() {
-	  String output = "";
-	  Film[] top10Films;
-	  int count = 1;
-	  try {
-		top10Films = getFilms();
-		for (Film film : top10Films) {
-			output += (count) + ". " + film.toString() + " has been rented out "
-					+ rentCountFilms.get(film) + " times\n";
-			count++;
-		}
-		return output;
-	} 
-	  catch (SQLException e) {
-		e.printStackTrace();
-		return null;
-	}
+	  String valueAsString = getValueAsString();
+	  if (valueAsString == null) {
+		  return "No results found or an error has occurred";
+	  }
+	  String output = "The top 10 films based on their number of rentals is:\n";
+	  for (int p = 0; p < valueAsString.lines().count()*4; p = p+4) {
+		  output += valueAsString.split(":")[p] + ". ";
+		  output += valueAsString.split(":")[p + 1] + " (ID: ";
+		  output += valueAsString.split(":")[p + 2] + ") has been rented ";
+		  output += valueAsString.split(":")[p + 3] + " times";
+	  }
+	  return output;
   }
-
 }

@@ -10,12 +10,11 @@ public class Film {
 	private String title;
 	
 	/**
-	 * Create a film with a given ID and title
+	 * Create a film with a given ID
 	 
 	 * @param filmID, The ID of the film, must be >= 0.
 	 * @throws IllegalArgumentException if the filmID is invalid
 	 */
-		
 	public Film(int filmID) {
 		if (filmID < 0) {
 			throw new IllegalArgumentException("The filmID cannot"
@@ -39,7 +38,7 @@ public class Film {
 	
 	@Override
 	public String toString() {
-		return title + " (ID: " + filmID + ")";
+		return title + ":" + filmID;
 	}
 
 }

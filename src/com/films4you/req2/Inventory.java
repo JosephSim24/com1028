@@ -10,7 +10,7 @@ public class Inventory {
 	private int filmID;
 
 	/**
-	 * Create an inventory item with a given ID and title
+	 * Create an inventory item with a given ID
 	 
 	 * @param inventoryID, The ID of the item in inventory, must be >= 0.
 	 * @throws IllegalArgumentException if the inventoryID is invalid

@@ -10,7 +10,7 @@ public class Rental {
 	private int inventoryID;
 	
 	/**
-	 * Create a rental with a given rentalID
+	 * Create a rental with a given ID
 	 
 	 * @param rentalID, the ID of the rental, must be >= 0.
 	 * @throws IllegalArgumentException if the rentalID is invalid.
