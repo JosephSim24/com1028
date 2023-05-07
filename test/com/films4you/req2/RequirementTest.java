@@ -17,13 +17,13 @@ public class RequirementTest {
     }	else {
     	assertEquals("BUCKET BROTHERHOOD (ID: 103): 34\n"
     			+ "ROCKETEER MOTHER (ID: 738): 33\n"
-    			+ "GRIT CLOCKWORK (ID: 382): 32\n"
     			+ "FORWARD TEMPLE (ID: 331): 32\n"
+    			+ "GRIT CLOCKWORK (ID: 382): 32\n"
+    			+ "JUGGLER HARDLY (ID: 489): 32\n"
     			+ "RIDGEMONT SUBMARINE (ID: 730): 32\n"
     			+ "SCALAWAG DUCK (ID: 767): 32\n"
-    			+ "JUGGLER HARDLY (ID: 489): 32\n"
-    			+ "TIMBERLAND SKY (ID: 891): 31\n"
-    			+ "RUSH GOODFELLAS (ID: 753): 31\n"
+    			+ "APACHE DIVINE (ID: 31): 31\n"
+    			+ "GOODFELLAS SALUTE (ID: 369): 31\n"
     			+ "HOBBIT ALIEN (ID: 418): 31\n", value);
     }
   }
@@ -33,14 +33,14 @@ public class RequirementTest {
     Requirement r = new Requirement();
     assertEquals("1. BUCKET BROTHERHOOD (ID: 103) has been rented out 34 times\n"
     		+ "2. ROCKETEER MOTHER (ID: 738) has been rented out 33 times\n"
-    		+ "3. RIDGEMONT SUBMARINE (ID: 730) has been rented out 32 times\n"
-    		+ "4. FORWARD TEMPLE (ID: 331) has been rented out 32 times\n"
-    		+ "5. GRIT CLOCKWORK (ID: 382) has been rented out 32 times\n"
-    		+ "6. JUGGLER HARDLY (ID: 489) has been rented out 32 times\n"
+    		+ "3. FORWARD TEMPLE (ID: 331) has been rented out 32 times\n"
+    		+ "4. GRIT CLOCKWORK (ID: 382) has been rented out 32 times\n"
+    		+ "5. JUGGLER HARDLY (ID: 489) has been rented out 32 times\n"
+    		+ "6. RIDGEMONT SUBMARINE (ID: 730) has been rented out 32 times\n"
     		+ "7. SCALAWAG DUCK (ID: 767) has been rented out 32 times\n"
-    		+ "8. RUSH GOODFELLAS (ID: 753) has been rented out 31 times\n"
-    		+ "9. NETWORK PEAK (ID: 621) has been rented out 31 times\n"
-    		+ "10. GOODFELLAS SALUTE (ID: 369) has been rented out 31 times\n", r.getHumanReadable());
+    		+ "8. APACHE DIVINE (ID: 31) has been rented out 31 times\n"
+    		+ "9. GOODFELLAS SALUTE (ID: 369) has been rented out 31 times\n"
+    		+ "10. HOBBIT ALIEN (ID: 418) has been rented out 31 times\n", r.getHumanReadable());
     
   } 
   

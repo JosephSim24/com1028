@@ -150,6 +150,22 @@ public class Requirement implements RequirementInterface {
 	    }
 	    
 	    /*
+	     * Sorts the ordered films alphabetically if the films have been rented the same number
+	     * of times
+	     */
+	    for (int i = 0; i < orderedFilms.length; i++) {
+	    	for (int j = i + 1; j < orderedFilms.length; j++) {
+	    		if (rentCountFilms.get(orderedFilms[i]) == rentCountFilms.get(orderedFilms[j])) {
+	    			if (orderedFilms[i].getTitle().compareTo(orderedFilms[j].getTitle()) > 0) {
+	    				Film tempFilm = orderedFilms[i];
+	    				orderedFilms[i] = orderedFilms[j];
+	    				orderedFilms[j] = tempFilm;
+	    			}
+	    		}
+	    	}
+	    }
+	    
+	    /*
 	     * Creates an array of only the first 10 films from the array "orderedFilms"
 	     */
 	    Film[] top10Films = new Film[10];
