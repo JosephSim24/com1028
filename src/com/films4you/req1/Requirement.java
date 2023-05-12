@@ -21,7 +21,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public class Requirement implements RequirementInterface {
 	
-  
+	/**
+	 * A method that returns the total number of actors
+	 * 
+	 * @return An integer to represent the number of actors
+	 * @throws SQLException on database error
+	 * @throws IllegalStateException on error, e.g. value null when not allowed
+	 */
 	public int getActors() throws SQLException, IllegalStateException {
 		Database db = new Database();
 		int actorCount = 0;

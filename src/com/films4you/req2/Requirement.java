@@ -31,7 +31,10 @@ public class Requirement implements RequirementInterface {
 	 * A method which returns the top 10 films based on the number of rentals
 	 * 
 	 * @return An array list consisting of the top 10 films based on number
-	 * of rentals of each film
+	 * of rentals of each film.
+	 * @throws SQLException on database error
+	 * @throws IllegalStateException on error, e.g. when value is null 
+	 * when it shouldn't be
 	 */
 	
 	private Film[] getTop10Films() throws SQLException, IllegalStateException {
@@ -54,11 +57,9 @@ public class Requirement implements RequirementInterface {
 	    while (rs.next()) {
 	    	int rentalID = rs.getInt(1);
 	    	int inventoryID = rs.getInt(3);
-	    	if (inventoryID >= 0 && rentalID >= 0) {
-	    		Rental rental = new Rental(rentalID);
-	    		rental.setInventoryID(inventoryID);
-	    		allRentals.add(rental);
-	    	}
+	    	Rental rental = new Rental(rentalID);
+	    	rental.setInventoryID(inventoryID);
+	    	allRentals.add(rental);
 	    }
 	    
 	    
@@ -74,11 +75,9 @@ public class Requirement implements RequirementInterface {
 		 while (rs.next()) {
 			 int inventoryID = rs.getInt(1);
 			 int filmID = rs.getInt(2);
-			 if (inventoryID >= 0 && filmID >= 0) {
-				 Inventory item = new Inventory(inventoryID);
-				 item.setFilmID(filmID);
-				 allInventory.add(item);
-			 }
+			 Inventory item = new Inventory(inventoryID);
+			 item.setFilmID(filmID);
+			 allInventory.add(item);
 		 }
 		    
 	    
@@ -91,11 +90,9 @@ public class Requirement implements RequirementInterface {
 	    while (rs.next()) {
 	    	int filmID = rs.getInt(1);
 	    	String title = rs.getString(2);
-	    	if (filmID >= 0 && title != null) {
-	    		Film film = new Film(filmID);
-	    		film.setTitle(title);
-	    		allFilms.add(film);
-	    	}
+	    	Film film = new Film(filmID);
+	    	film.setTitle(title);
+	    	allFilms.add(film);
 	    }
 	    db.close();
 	    

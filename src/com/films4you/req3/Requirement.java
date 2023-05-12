@@ -23,7 +23,7 @@ public class Requirement implements RequirementInterface {
 	/**
 	 * Get all actors with their actor ID, first name and last name
 	 
-	 * @return List of actors
+	 * @return Array list of actors
 	 * @throws SQLException on database error
 	 * @throws IllegalStateException on error, e.g. value null when not allowed
 	 */
@@ -40,12 +40,10 @@ public class Requirement implements RequirementInterface {
 			int actorID = rs.getInt(1);
 			String firstName = rs.getString(2);
 			String lastName = rs.getString(3);
-			if (actorID >= 0 && firstName != null && lastName != null) {
-				Actor actor = new Actor(actorID);
-				actor.setFirstName(firstName);
-				actor.setLastName(lastName);
-				allActors.add(actor);
-			}
+			Actor actor = new Actor(actorID);
+			actor.setFirstName(firstName);
+			actor.setLastName(lastName);
+			allActors.add(actor);
 		}
 		
 		db.close();
@@ -53,7 +51,13 @@ public class Requirement implements RequirementInterface {
 		
 	}
 	
-	
+	/**
+	 * A method used privately which returns all the actors who have
+	 * the first name "Penelope"
+	 * 
+	 * @param An array list: actors
+	 * @return Array list of actors
+	 */
 	private List<Actor> getActorsWithNamePenelope(List<Actor> actors) {
 		List<Actor> penelopeList = new ArrayList<>();
 		for (Actor actor : actors) {
