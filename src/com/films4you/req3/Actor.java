@@ -2,6 +2,8 @@ package com.films4you.req3;
 
 /**
  * A class which represents an actor
+ * 
+ * @author Joseph Sim
  */
 
 public class Actor {

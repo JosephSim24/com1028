@@ -6,9 +6,10 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Your class description here.
+ * Requirement: Find the most popular film in each category
+ * based on the number of rentals
 
- * @author Your name
+ * @author Joseph Sim
  *
  */
 public class Requirement implements RequirementInterface {

@@ -2,6 +2,8 @@ package com.films4you.req2;
 
 /**
  * A class which represents the inventory of the Films4You stores
+ * 
+ * @author Joseph Sim
  */
 
 public class Inventory {

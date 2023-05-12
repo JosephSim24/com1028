@@ -2,6 +2,8 @@ package com.films4you.req2;
 
 /**
  * A class which represents a film
+ * 
+ * @author Joseph Sim
  */
 
 public class Film {
