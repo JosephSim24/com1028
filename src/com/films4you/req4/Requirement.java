@@ -2,12 +2,11 @@ package com.films4you.req4;
 
 import com.films4you.main.Database;
 import com.films4you.main.RequirementInterface;
-import com.films4you.main.TaskNotAttemptedException;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -110,23 +109,36 @@ public class Requirement implements RequirementInterface {
 	/**
 	 * A private method which sorts an array list of films based
 	 * on each film's number of rentals from most rentals to least
-	 * rentals
+	 * rentals, using bubble sort, and if the films have the same
+	 * number of rentals, they are sorted alphabetically.
 	 * 
 	 * @param An array list: films
 	 * @return An array list of Films
 	 */
 	private List<Film> sortFilms(List<Film> films) {
-		int i, key, j;
-		for (i = 1; i < films.size(); i++) {
-			key = films.get(i).getRentals();
-			j = i - 1;
-			
-			while (j >= 0 && films.get(j).getRentals() < key) {
-				films.set(j + 1, films.get(j));
-				j = j - 1;
+		Film tempFilm;
+		for (int i = 0; i < films.size(); i++) {
+			for (int j = 1; j < films.size() - i; j++) {
+				if (films.get(j - 1).getRentals() < films.get(j).getRentals()) {
+					tempFilm = films.get(j - 1);
+					films.set(j - 1, films.get(j));
+					films.set(j, tempFilm);
+				}
 			}
-			films.set(j + 1, films.get(key));
 		}
+		
+		for (int k = 0; k < films.size(); k++) {
+			for (int l = k + 1; l < films.size(); l++) {
+				if (films.get(k).getRentals() == films.get(l).getRentals()) {
+					if (films.get(k).getTitle().compareTo(films.get(l).getTitle()) > 0) {
+						tempFilm = films.get(k);
+						films.set(k, films.get(l));
+						films.set(l, tempFilm);
+					}
+				}
+			}
+		}
+		
 		return films;
 	}
 	
@@ -140,7 +152,9 @@ public class Requirement implements RequirementInterface {
 	 */
 	private Map<Category, Film> getTopFilmsInCategory() throws IllegalStateException, SQLException {
 		Database db = new Database();
-		Map<Category, Film> topFilmInCategory = new HashMap<>();
+		Map<Category, Film> topFilmInCategory = new LinkedHashMap<>();
+		//A linked hash map is used here to preserve the order of the categories
+		
 		List<Film_Category> allFilmCategories = new ArrayList<>();
 		List<Film> sortedFilms = getFilms();
 
@@ -183,8 +197,8 @@ public class Requirement implements RequirementInterface {
 				if (film.getFilmID() == filmCategory.getFilmID()) {
 					for (Category category : topFilmInCategory.keySet()) {
 						if (filmCategory.getCategoryID() == category.getCategoryID()) {
-							if (topFilmInCategory.get(category) != null) {
-								topFilmInCategory.put(category, film);
+							if (topFilmInCategory.get(category) == null) {
+								topFilmInCategory.replace(category, film);
 							}
 						}
 					}
@@ -195,15 +209,61 @@ public class Requirement implements RequirementInterface {
 		return topFilmInCategory;
 	}
 	
-  
-  @Override
-  public @Nullable String getValueAsString() {
-    throw new TaskNotAttemptedException();
-  }
-
-  @Override
-  public @NonNull String getHumanReadable() {
-    throw new TaskNotAttemptedException();
-  }
+	
+	/**
+	 * A method which returns each category and their respective most
+	 * rented film in a non-human-readable format.
+	 * 
+	 * @return A String containing a film category with that category's
+	 * most popular film in the format "[CATEGORYNAME]:[FILMNAME]:[FILMID]:[RENTCOUNT]:\n
+	 * [CATEGORYNAME]:[FILMNAME]:[FILMID]:[RENTCOUNT]:\n etc.".
+	 */
+	@Override
+	public @Nullable String getValueAsString() {
+		try {
+			Map<Category, Film> filmCategory = getTopFilmsInCategory();
+			String output = "";
+			for (Category category : filmCategory.keySet()) {
+				if (filmCategory.get(category) != null) {
+					output += category.getName() + ":" + 
+							filmCategory.get(category).toString() + ":\n";
+				} else {
+					output += category.getName() + ":0:0:\n"; 
+				}
+			}
+			return output;
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	/**
+	 * A method to parse the String from method getValueAsString and
+	 * return it in a human-readable-format.
+	 * 
+	 * @return A String formatted for the end user containing the most
+	 * popular film in each category. In the format
+	 * "The most popular films for each category are:\n
+	 * [CATEGORYNAME]: [FILMNAME](ID: [FILMID]) which has been rented [RENTCOUNT] times\n
+	 * [CATEGORYNAME]: [FILMNAME](ID: [FILMID]) which has been rented [RENTCOUNT] times\n
+	 * etc.
+	 */
+	@Override
+	public @NonNull String getHumanReadable() {
+		String valueAsString = getValueAsString();
+		if (valueAsString == null) {
+			  return "No results found or an error has occurred";
+		  }
+		String output = "The most popular film in each category is:\n";
+		for (int s = 0; s < valueAsString.lines().count()*4; s = s+4) {
+			output += valueAsString.split(":")[s] + ": ";
+			output += valueAsString.split(":")[s + 1] + " (ID: ";
+			output += valueAsString.split(":")[s + 2] + ") which has been rented ";
+			output += valueAsString.split(":")[s + 3] + " times";
+		}
+		return output;
+	}
 
 }

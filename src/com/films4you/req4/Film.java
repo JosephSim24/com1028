@@ -10,7 +10,7 @@ public class Film {
 	
 	private int filmID;
 	private String title;
-	private int rentCount = 0;
+	private int rentCount;
 	
 	/**
 	 * Create a film with a given ID and name
@@ -27,6 +27,7 @@ public class Film {
 		
 		this.filmID = filmID;
 		this.title = title;
+		rentCount = 0;
 	}
 	
 	public int getFilmID() {
@@ -47,7 +48,7 @@ public class Film {
 	
 	@Override
 	public String toString() {
-		return title + ":" + filmID;
+		return title + ":" + filmID + ":" + rentCount;
 	}
 
 }

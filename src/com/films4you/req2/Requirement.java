@@ -180,11 +180,12 @@ public class Requirement implements RequirementInterface {
 	
 	
 	/**
-	 * A method which returns the top 10 rented films
+	 * A method which returns the top 10 rented films in a non-human-
+	 * readable format.
 	 
 	 * @return A String containing the 10 top rented films each
-	 * separated by commas in the format "[FILMTITLE]:[FILMID]:[RENTCOUNT]:\n
-	 * [FILMTITLE]:[FILMID]:[RENTCOUNT]:\n etc.".
+	 * separated by colons in the format "[COUNT]:[FILMTITLE]:[FILMID]:[RENTCOUNT]:\n
+	 * [COUNT]:[FILMTITLE]:[FILMID]:[RENTCOUNT]:\n etc.".
 	 */
   @Override
   public @Nullable String getValueAsString() {
@@ -209,9 +210,9 @@ public class Requirement implements RequirementInterface {
     
    * @return A String formatted for the end user containing the
    * top 10 rented films and their IDs. In the format 
-   * "The top 10 films based on their number of rentals is:
-   * 1. [FILM] (ID: [FILMID]) has been rented [COUNT] times
-   * 2. [FILM] (ID: [FILMID]) has been rented [COUNT] times
+   * "The top 10 films based on their number of rentals is:\n
+   * 1. [FILM] (ID: [FILMID]) has been rented [COUNT] times\n
+   * 2. [FILM] (ID: [FILMID]) has been rented [COUNT] times\n
    * 3. etc.".
    */
   @Override
